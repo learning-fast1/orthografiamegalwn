@@ -68,6 +68,78 @@
 
   /* ─── MENU ─── */
   #screen-menu { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+
+  /* ─── LENGTH PICKER ─── */
+  #length-picker { text-align: center; animation: fadeIn .3s; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  #length-picker h3 {
+    font-size: 1.3rem; font-weight: 800; margin-bottom: 18px; opacity: .85;
+  }
+  .length-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .length-btn {
+    width: 90px; padding: 18px 0;
+    background: var(--card);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius);
+    color: white; font-family: inherit; font-size: 1.5rem; font-weight: 900;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    backdrop-filter: blur(12px);
+  }
+  .length-btn span { display: block; font-size: .75rem; font-weight: 600; opacity: .6; margin-top: 4px; }
+  .length-btn:hover {
+    transform: translateY(-5px) scale(1.06);
+    box-shadow: 0 12px 36px rgba(168,85,247,.45);
+    border-color: var(--purple);
+  }
+  .btn-back-mode {
+    background: none; border: none; color: rgba(255,255,255,0.5);
+    font-family: inherit; font-size: .95rem; cursor: pointer; margin-top: 8px;
+  }
+  .btn-back-mode:hover { color: white; }
+
+  /* ─── PLAYER PICKER ─── */
+  .player-btns { display: flex; gap: 20px; justify-content: center; }
+  .player-btn {
+    width: 150px; padding: 28px 16px;
+    background: var(--card);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius);
+    color: white; font-family: inherit;
+    cursor: pointer; text-align: center;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    backdrop-filter: blur(12px);
+  }
+  .player-btn .p-icon  { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+  .player-btn .p-label { font-size: 1.1rem; font-weight: 800; }
+  .player-btn:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 36px rgba(168,85,247,.45);
+    border-color: var(--purple);
+  }
+
+  /* ─── 2-PLAYER LAYOUT ─── */
+  .two-player-answers {
+    display: flex; gap: 20px; justify-content: center;
+    max-width: 780px; margin: 0 auto;
+  }
+  .player-col {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 10px;
+  }
+  .player-label {
+    font-size: 1rem; font-weight: 800;
+    padding: 7px 22px; border-radius: 50px;
+    letter-spacing: .05em; width: 100%; text-align: center;
+  }
+  .p1-label { background: rgba(59,130,246,.25); border: 1.5px solid var(--blue);  color: #93c5fd; }
+  .p2-label { background: rgba(236,72,153,.25); border: 1.5px solid var(--pink);  color: #f9a8d4; }
+  .player-col .answers { flex-direction: column; width: 100%; }
+  .player-col .ans-btn { width: 100%; }
+  /* P2 score color */
+  #stat-score2  { color: var(--pink); }
+  #stat-streak2 { color: #f97316; }
+  #stat-lives2  { color: var(--red); }
   .menu-cards { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
   .menu-card {
     width: 260px; padding: 36px 24px;
@@ -283,10 +355,131 @@
   }
   .btn-secondary:hover { background: rgba(255,255,255,0.2); }
 
+  /* ─── ASTRO TRACK ─── */
+  #astro-track {
+    display: none;
+    position: fixed;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column;
+    align-items: center;
+    z-index: 20;
+    width: 130px;
+  }
+  .astro-earth {
+    font-size: 4rem;
+    filter: drop-shadow(0 0 16px rgba(34,197,94,.8));
+    margin-bottom: -6px;
+    z-index: 2;
+  }
+  .astro-scene {
+    position: relative;
+    width: 130px;
+    height: 380px;
+  }
+  #astro-svg { position: absolute; top: 0; left: 0; }
+  #astro-ship {
+    position: absolute;
+    font-size: 2.6rem;
+    left: 65px; top: 360px;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    transition: left .65s cubic-bezier(.4,0,.2,1), top .65s cubic-bezier(.4,0,.2,1);
+    filter: drop-shadow(0 0 12px rgba(168,85,247,.9));
+    z-index: 2;
+  }
+  .astro-moon {
+    position: absolute;
+    font-size: 1.8rem;
+    right: 4px; top: 38%;
+    opacity: .7;
+  }
+  .astro-planet {
+    position: absolute;
+    font-size: 1.4rem;
+    left: 2px; top: 65%;
+    opacity: .6;
+  }
+  .astro-space-icon { font-size: 2.2rem; margin-top: -6px; z-index: 2; }
+  #astro-ship.go-up   { animation: bumpUp .35s ease-out; }
+  #astro-ship.go-down { animation: bumpDown .35s ease-out; }
+  @keyframes bumpUp   { 50%{filter:drop-shadow(0 0 28px rgba(34,197,94,1))  scale(1.3)} }
+  @keyframes bumpDown { 50%{filter:drop-shadow(0 0 28px rgba(239,68,68,1))  scale(1.3)} }
+  #astro-track.reached .astro-earth {
+    animation: earthPulse .55s infinite alternate;
+  }
+  @keyframes earthPulse {
+    from { transform: scale(1);    filter: drop-shadow(0 0 16px rgba(34,197,94,.8)); }
+    to   { transform: scale(1.35); filter: drop-shadow(0 0 32px rgba(34,197,94,1));  }
+  }
+  @media (max-width: 960px) { #astro-track { display: none !important; } }
+
   @media (max-width: 500px) {
     .menu-card { width: 100%; }
     .ans-btn { padding: 12px 18px; font-size: 1rem; }
     .sentence { font-size: 1.4rem; }
+  }
+
+  /* ─── 2-PLAYER SPLIT SCREEN ─── */
+  #screen-game-2p { display: none; }
+  .topbar-2p {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 14px;
+  }
+  .topbar-2p .progress-wrap { flex: 1; margin-bottom: 0; }
+  .topbar-2p .q-num-2p { font-size: .9rem; opacity: .5; white-space: nowrap; }
+  .panels-2p { display: flex; gap: 12px; align-items: flex-start; }
+  .panel-2p {
+    flex: 1; display: flex; flex-direction: column; gap: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius); padding: 14px;
+  }
+  .p1-panel { border-color: rgba(59,130,246,.35); }
+  .p2-panel { border-color: rgba(236,72,153,.35); }
+  .panel-header-2p {
+    text-align: center; font-size: 1rem; font-weight: 900;
+    padding: 7px 16px; border-radius: 50px; letter-spacing: .05em;
+  }
+  .p1-header-2p { background: rgba(59,130,246,.2); color: #93c5fd; border: 1.5px solid var(--blue); }
+  .p2-header-2p { background: rgba(236,72,153,.2); color: #f9a8d4; border: 1.5px solid var(--pink); }
+  .panel-stats-2p { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .panel-stats-2p .stat-box { min-width: 52px; padding: 5px 10px; }
+  .panel-stats-2p .stat-box .value { font-size: 1rem; }
+  .qcard-2p {
+    background: var(--card);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 14px; padding: 16px 12px;
+    text-align: center; backdrop-filter: blur(14px);
+    min-height: 76px;
+  }
+  .qcard-2p .sentence { font-size: clamp(.9rem, 2.5vw, 1.35rem); font-weight: 800; }
+  .qcard-2p.shake  { animation: shake .4s; }
+  .qcard-2p.bounce { animation: bounceQ .4s; }
+  .answers-2p { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .answers-2p .ans-btn { padding: 8px 14px; font-size: .95rem; min-width: 56px; }
+  .mini-track-wrap { display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
+  .mini-earth-icon {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 10px rgba(34,197,94,.7));
+    margin-bottom: -4px;
+  }
+  .mini-scene-wrap { position: relative; width: 80px; height: 160px; }
+  .mini-scene-wrap svg { position: absolute; top: 0; left: 0; }
+  .mini-ship-2p {
+    position: absolute; font-size: 1.5rem;
+    left: 40px; top: 150px;
+    transform: translate(-50%,-50%) rotate(-45deg);
+    transition: left .55s cubic-bezier(.4,0,.2,1), top .55s cubic-bezier(.4,0,.2,1);
+    filter: drop-shadow(0 0 8px rgba(168,85,247,.9)); z-index: 2;
+  }
+  .mini-ship-2p.go-up   { animation: bumpUp .35s ease-out; }
+  .mini-ship-2p.go-down { animation: bumpDown .35s ease-out; }
+  #mini-track-p1.reached .mini-earth-icon,
+  #mini-track-p2.reached .mini-earth-icon { animation: earthPulse .55s infinite alternate; }
+  @media (max-width: 600px) {
+    .panels-2p { flex-direction: column; }
+    .panel-2p { width: 100%; }
   }
 </style>
 </head>
@@ -306,17 +499,39 @@
 
   <!-- MENU -->
   <div id="screen-menu">
-    <div class="menu-cards">
-      <div class="menu-card articles" onclick="startGame('articles')" id="card-articles">
-        <div class="icon">📖</div>
+    <div class="menu-cards" id="mode-cards">
+      <div class="menu-card articles" onclick="pickMode('articles')" id="card-articles">
         <h2>Άρθρα</h2>
         <p>Βρες το σωστό άρθρο!<br><em>η, οι, της, τις, των, τον…</em></p>
       </div>
-      <div class="menu-card endings" onclick="startGame('endings')" id="card-endings">
-        <div class="icon">✏️</div>
+      <div class="menu-card endings" onclick="pickMode('endings')" id="card-endings">
         <h2>Καταλήξεις</h2>
         <p>Βρες τη σωστή κατάληξη!<br><em>-η, -οι, -εις, -ων, -ο, -ες…</em></p>
       </div>
+    </div>
+    <div id="players-picker" style="display:none">
+      <h3>Πόσοι παίκτες;</h3>
+      <div class="player-btns">
+        <button class="player-btn" onclick="pickPlayers(1)">
+          <span class="p-icon">👤</span>
+          <span class="p-label">1 Παίκτης</span>
+        </button>
+        <button class="player-btn" onclick="pickPlayers(2)">
+          <span class="p-icon">👥</span>
+          <span class="p-label">2 Παίκτες</span>
+        </button>
+      </div>
+      <button class="btn-back-mode" onclick="showModeCards()">← Πίσω</button>
+    </div>
+    <div id="length-picker" style="display:none">
+      <h3>Πόσες ερωτήσεις θέλεις;</h3>
+      <div class="length-btns">
+        <button class="length-btn" onclick="startGame(pendingMode,10)">10<span>ερωτήσεις</span></button>
+        <button class="length-btn" onclick="startGame(pendingMode,15)">15<span>ερωτήσεις</span></button>
+        <button class="length-btn" onclick="startGame(pendingMode,20)">20<span>ερωτήσεις</span></button>
+        <button class="length-btn" onclick="startGame(pendingMode,25)">25<span>ερωτήσεις</span></button>
+      </div>
+      <button class="btn-back-mode" onclick="showPlayersPicker()">← Πίσω</button>
     </div>
   </div>
 
@@ -325,9 +540,14 @@
     <div class="topbar">
       <button class="btn-back" onclick="goMenu()">← Μενού</button>
       <div class="stats">
-        <div class="stat-box"><div class="label">Πόντοι</div><div class="value score" id="stat-score">0</div></div>
-        <div class="stat-box"><div class="label">Σερί</div><div class="value streak" id="stat-streak">0🔥</div></div>
+        <div class="stat-box"><div class="label" id="label-p1">Πόντοι</div><div class="value score" id="stat-score">0</div></div>
+        <div class="stat-box"><div class="label">Σερί</div><div class="value streak" id="stat-streak">0</div></div>
         <div class="stat-box"><div class="label">Ζωές</div><div class="value lives" id="stat-lives">❤️❤️❤️</div></div>
+      </div>
+      <div class="stats" id="p2-stats" style="display:none">
+        <div class="stat-box"><div class="label" id="label-p2">Πόντοι</div><div class="value" id="stat-score2" style="color:var(--pink)">0</div></div>
+        <div class="stat-box"><div class="label">Σερί</div><div class="value" id="stat-streak2" style="color:#f97316">0</div></div>
+        <div class="stat-box"><div class="label">Ζωές</div><div class="value" id="stat-lives2" style="color:var(--red)">❤️❤️❤️</div></div>
       </div>
     </div>
     <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
@@ -337,7 +557,19 @@
       <div class="sentence" id="sentence"></div>
       <div class="hint" id="hint"></div>
     </div>
+    <!-- 1-player answers -->
     <div class="answers" id="answers"></div>
+    <!-- 2-player answers -->
+    <div id="two-player-answers" style="display:none" class="two-player-answers">
+      <div class="player-col">
+        <div class="player-label p1-label">👤 Παίκτης 1</div>
+        <div class="answers" id="answers-p1"></div>
+      </div>
+      <div class="player-col">
+        <div class="player-label p2-label">👤 Παίκτης 2</div>
+        <div class="answers" id="answers-p2"></div>
+      </div>
+    </div>
   </div>
 
   <!-- RESULT -->
@@ -346,12 +578,92 @@
       <div class="result-emoji" id="res-emoji">🏆</div>
       <h2 id="res-title">Μπράβο!</h2>
       <div class="result-score" id="res-score">0</div>
+      <div id="res-score2" style="display:none; font-size:2rem; font-weight:900; color:var(--pink); margin: -8px 0 8px;"></div>
       <div class="result-meta" id="res-meta"></div>
       <button class="btn-primary" id="btn-play-again" onclick="playAgain()">🔄 Παίξε Ξανά</button>
       <button class="btn-secondary" onclick="goMenu()">🏠 Μενού</button>
     </div>
   </div>
 
+
+  <!-- 2-PLAYER GAME -->
+  <div id="screen-game-2p">
+    <div class="topbar-2p">
+      <button class="btn-back" onclick="goMenu()">← Μενού</button>
+      <div class="progress-wrap"><div class="progress-bar" id="progress-bar-2p"></div></div>
+      <div class="q-num-2p" id="q-number-2p">1 / 10</div>
+    </div>
+    <div class="panels-2p">
+      <!-- P1 -->
+      <div class="panel-2p p1-panel">
+        <div class="panel-header-2p p1-header-2p">👤 Παίκτης 1</div>
+        <div class="panel-stats-2p">
+          <div class="stat-box"><div class="label">Πόντοι</div><div class="value score" id="p1-score">0</div></div>
+          <div class="stat-box"><div class="label">Σερί</div><div class="value streak" id="p1-streak">0</div></div>
+          <div class="stat-box"><div class="label">Ζωές</div><div class="value lives" id="p1-lives">❤️❤️❤️</div></div>
+        </div>
+        <div class="qcard-2p" id="qcard-p1"><div class="sentence" id="sentence-p1"></div></div>
+        <div class="answers-2p" id="ans-p1"></div>
+        <div class="mini-track-wrap" id="mini-track-p1">
+          <div class="mini-earth-icon">🌍</div>
+          <div class="mini-scene-wrap">
+            <svg width="80" height="160" viewBox="0 0 80 160">
+              <path id="mini-path-p1" d="M40,155 C65,130 15,108 40,83 C65,58 15,33 40,10"
+                    fill="none" stroke="rgba(59,130,246,0.45)" stroke-width="2.5" stroke-dasharray="7,5"/>
+            </svg>
+            <span class="mini-ship-2p" id="mini-ship-p1">🚀</span>
+          </div>
+        </div>
+      </div>
+      <!-- P2 -->
+      <div class="panel-2p p2-panel">
+        <div class="panel-header-2p p2-header-2p">👤 Παίκτης 2</div>
+        <div class="panel-stats-2p">
+          <div class="stat-box"><div class="label">Πόντοι</div><div class="value score" id="p2-score">0</div></div>
+          <div class="stat-box"><div class="label">Σερί</div><div class="value streak" id="p2-streak">0</div></div>
+          <div class="stat-box"><div class="label">Ζωές</div><div class="value lives" id="p2-lives">❤️❤️❤️</div></div>
+        </div>
+        <div class="qcard-2p" id="qcard-p2"><div class="sentence" id="sentence-p2"></div></div>
+        <div class="answers-2p" id="ans-p2"></div>
+        <div class="mini-track-wrap" id="mini-track-p2">
+          <div class="mini-earth-icon">🌍</div>
+          <div class="mini-scene-wrap">
+            <svg width="80" height="160" viewBox="0 0 80 160">
+              <path id="mini-path-p2" d="M40,155 C65,130 15,108 40,83 C65,58 15,33 40,10"
+                    fill="none" stroke="rgba(236,72,153,0.45)" stroke-width="2.5" stroke-dasharray="7,5"/>
+            </svg>
+            <span class="mini-ship-2p" id="mini-ship-p2">🚀</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ASTRONAUT TRACK (1-player mode only) -->
+<div id="astro-track">
+  <div class="astro-earth">🌍</div>
+  <div class="astro-scene">
+    <svg id="astro-svg" width="130" height="380" viewBox="0 0 130 380">
+      <defs>
+        <filter id="pathglow">
+          <feGaussianBlur stdDeviation="2.5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <path id="astro-path"
+            d="M65,370 C105,300 20,240 65,175 C105,115 22,60 65,10"
+            fill="none"
+            stroke="rgba(168,85,247,0.35)"
+            stroke-width="3"
+            stroke-dasharray="9,7"
+            filter="url(#pathglow)"/>
+    </svg>
+    <span id="astro-ship">🚀</span>
+    <span class="astro-moon">🌙</span>
+    <span class="astro-planet">🪐</span>
+  </div>
 </div>
 
 <!-- TOAST -->
@@ -410,9 +722,6 @@ const articlesData = [
   { word: "βασιλιά",    answer: "τον", options: ["τον","των","της","τις"], hint: "Αιτιατική, ενικός, αρσενικό" },
   { word: "ποταμό",     answer: "τον", options: ["τον","των","της","τις"], hint: "Αιτιατική, ενικός, αρσενικό" },
   { word: "λόφο",       answer: "τον", options: ["τον","των","της","τις"], hint: "Αιτιατική, ενικός, αρσενικό" },
-  // ── Αιτιατική αρσενικό πληθυντικός ───────────────────────
-  { word: "φίλους",     answer: "τους",options: ["τους","τις","η","οι"],  hint: "Αιτιατική, πληθυντικός, αρσενικό" },
-  { word: "μαθητές",    answer: "τους",options: ["τους","τις","η","οι"],  hint: "Αιτιατική, πληθυντικός, αρσενικό" },
   // ── Αιτιατική θηλυκό πληθυντικός ─────────────────────────
   { word: "φίλες",      answer: "τις", options: ["τις","της","τον","των"],  hint: "Αιτιατική, πληθυντικός, θηλυκό" },
   { word: "μαθήτριες",  answer: "τις", options: ["τις","της","τον","των"],  hint: "Αιτιατική, πληθυντικός, θηλυκό" },
@@ -472,8 +781,9 @@ const endingsData = [
    STATE
 ══════════════════════════════════════════════ */
 let mode = '', score = 0, streak = 0, lives = 3, qIndex = 0, questions = [], answered = false, lastMode = '';
-
-const TOTAL_Q = 10;
+let astroPos = 0, astroPos1 = 0, astroPos2 = 0, pendingMode = '', pendingPlayers = 1;
+let players = 1, score2 = 0, streak2 = 0, lives2 = 3, p1done = false, p2done = false;
+let TOTAL_Q = 10;
 
 /* ══════════════════════════════════════════════
    STARS
@@ -494,43 +804,109 @@ makeStars();
    SCREENS
 ══════════════════════════════════════════════ */
 function show(id) {
-  ['screen-menu','screen-game','screen-result'].forEach(s => document.getElementById(s).style.display = 'none');
+  ['screen-menu','screen-game','screen-game-2p','screen-result'].forEach(s => document.getElementById(s).style.display = 'none');
   document.getElementById(id).style.display = (id === 'screen-menu') ? 'flex' : 'block';
 }
 
-function goMenu() { show('screen-menu'); }
+function goMenu() {
+  show('screen-menu');
+  showModeCards();
+  document.getElementById('astro-track').style.display = 'none';
+}
 
-function playAgain() { startGame(lastMode); }
+function showModeCards() {
+  document.getElementById('mode-cards').style.display    = 'flex';
+  document.getElementById('players-picker').style.display = 'none';
+  document.getElementById('length-picker').style.display  = 'none';
+}
+
+function showPlayersPicker() {
+  document.getElementById('players-picker').style.display = 'block';
+  document.getElementById('mode-cards').style.display     = 'none';
+  document.getElementById('length-picker').style.display  = 'none';
+}
+
+function pickMode(m) {
+  pendingMode = m;
+  document.getElementById('mode-cards').style.display     = 'none';
+  document.getElementById('players-picker').style.display = 'block';
+}
+
+function pickPlayers(n) {
+  pendingPlayers = n;
+  document.getElementById('players-picker').style.display = 'none';
+  document.getElementById('length-picker').style.display  = 'block';
+}
+
+function playAgain() { startGame(lastMode, TOTAL_Q); }
 
 /* ══════════════════════════════════════════════
    GAME START
 ══════════════════════════════════════════════ */
-function startGame(m) {
-  mode = m; lastMode = m;
+function startGame(m, totalQ) {
+  mode = m; lastMode = m; TOTAL_Q = totalQ;
+  players = pendingPlayers;
   score = 0; streak = 0; lives = 3; qIndex = 0; answered = false;
+  score2 = 0; streak2 = 0; lives2 = 3; p1done = false; p2done = false;
   const pool = m === 'articles' ? [...articlesData] : [...endingsData];
   shuffle(pool);
   spreadSameAnswers(pool);
   questions = pool.slice(0, TOTAL_Q);
-  document.getElementById('mode-badge').textContent = m === 'articles' ? '📖 Άρθρα' : '✏️ Καταλήξεις';
-  show('screen-game');
-  updateStats();
-  renderQuestion();
+
+  if (players === 2) {
+    document.getElementById('astro-track').style.display = 'none';
+    astroPos1 = 0; astroPos2 = 0;
+    ['p1','p2'].forEach(p => {
+      const track = document.getElementById(`mini-track-${p}`);
+      track.classList.remove('reached');
+    });
+    setTimeout(() => {
+      ['p1','p2'].forEach(p => {
+        const path = document.getElementById(`mini-path-${p}`);
+        const ship = document.getElementById(`mini-ship-${p}`);
+        const pt = path.getPointAtLength(0);
+        ship.className = 'mini-ship-2p';
+        ship.style.transition = 'none';
+        ship.style.left = pt.x + 'px';
+        ship.style.top  = pt.y + 'px';
+        setTimeout(() => { ship.style.transition = ''; }, 50);
+      });
+    }, 0);
+    show('screen-game-2p');
+    render2P();
+  } else {
+    astroPos = 0;
+    const track = document.getElementById('astro-track');
+    track.style.display = 'flex';
+    track.classList.remove('reached');
+    const ship = document.getElementById('astro-ship');
+    ship.className = '';
+    setTimeout(() => {
+      const path = document.getElementById('astro-path');
+      const pt   = path.getPointAtLength(0);
+      ship.style.transition = 'none';
+      ship.style.left = pt.x + 'px';
+      ship.style.top  = pt.y + 'px';
+      setTimeout(() => { ship.style.transition = ''; }, 50);
+    }, 0);
+    document.getElementById('mode-badge').textContent = m === 'articles' ? '📖 Άρθρα' : '✏️ Καταλήξεις';
+    show('screen-game');
+    updateStats();
+    renderQuestion();
+  }
 }
 
 /* ══════════════════════════════════════════════
    RENDER QUESTION
 ══════════════════════════════════════════════ */
 function renderQuestion() {
-  answered = false;
+  answered = false; p1done = false; p2done = false;
   const q = questions[qIndex];
   document.getElementById('q-number').textContent = `Ερώτηση ${qIndex+1} / ${TOTAL_Q}`;
   document.getElementById('progress-bar').style.width = `${(qIndex/TOTAL_Q)*100}%`;
 
-  // Build display: articles → "___ λέξη",  endings → "στέλεχος___"
   let html = '';
   if (mode === 'articles') {
-    // blank before the word
     html = `<span class="blank" id="blank">___</span> ${q.word}`;
   } else {
     html = `${q.article} ${q.pre}<span class="blank" id="blank">_</span>${q.post}`;
@@ -539,60 +915,97 @@ function renderQuestion() {
   document.getElementById('hint').textContent = '';
 
   const opts = (() => { const o = [...q.options]; shuffle(o); return o; })();
-  const container = document.getElementById('answers');
-  container.innerHTML = '';
-  opts.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'ans-btn';
-    btn.id = 'opt-' + opt.replace(/[^a-zA-Zα-ωΑ-Ω]/g, '_');
-    btn.textContent = opt;
-    btn.onclick = () => checkAnswer(opt, q.answer, btn);
-    container.appendChild(btn);
-  });
+
+  if (players === 1) {
+    const container = document.getElementById('answers');
+    container.innerHTML = '';
+    opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'ans-btn';
+      btn.textContent = opt;
+      btn.onclick = () => checkAnswer(opt, q.answer, btn, 0);
+      container.appendChild(btn);
+    });
+  } else {
+    ['answers-p1','answers-p2'].forEach((cid, pIdx) => {
+      const container = document.getElementById(cid);
+      container.innerHTML = '';
+      opts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'ans-btn';
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(opt, q.answer, btn, pIdx + 1);
+        container.appendChild(btn);
+      });
+    });
+  }
 }
 
 /* ══════════════════════════════════════════════
    CHECK ANSWER
 ══════════════════════════════════════════════ */
-function checkAnswer(chosen, correct, btn) {
-  if (answered) return;
-  answered = true;
-
-  const blank = document.getElementById('blank');
+function checkAnswer(chosen, correct, btn, pNum) {
   const isOk = chosen.toLowerCase() === correct.toLowerCase();
 
-  if (isOk) {
-    streak++;
-    const bonus = Math.min(streak - 1, 3) * 5;
-    score += 10 + bonus;
-    btn.classList.add('correct');
-    if (blank) { blank.textContent = chosen; blank.classList.add('filled-correct'); }
-    showToast(streak >= 3 ? `🔥 Σερί x${streak}! +${10+bonus} πόντοι!` : `✅ Σωστό! +${10+bonus} πόντοι`, 'ok');
-    document.getElementById('q-card').classList.add('bounce');
-    setTimeout(() => document.getElementById('q-card').classList.remove('bounce'), 400);
-    if (streak >= 3) spawnConfetti(8);
+  if (players === 1) {
+    if (answered) return;
+    answered = true;
+    const blank = document.getElementById('blank');
+    if (isOk) {
+      streak++;
+      const bonus = Math.min(streak - 1, 3) * 5;
+      score += 10 + bonus;
+      btn.classList.add('correct');
+      if (blank) { blank.textContent = chosen; blank.classList.add('filled-correct'); }
+      showToast(streak >= 3 ? `🔥 Σερί x${streak}! +${10+bonus} πόντοι!` : `✅ Σωστό! +${10+bonus} πόντοι`, 'ok');
+      document.getElementById('q-card').classList.add('bounce');
+      setTimeout(() => document.getElementById('q-card').classList.remove('bounce'), 400);
+      if (streak >= 3) spawnConfetti(8);
+    } else {
+      streak = 0; lives--;
+      btn.classList.add('wrong');
+      document.querySelectorAll('#answers .ans-btn').forEach(b => {
+        if (b.textContent.toLowerCase() === correct.toLowerCase()) b.classList.add('correct');
+      });
+      if (blank) { blank.textContent = correct; blank.classList.add('filled-wrong'); }
+      showToast(`❌ Λάθος! Σωστό: ${correct}`, 'err');
+      document.getElementById('q-card').classList.add('shake');
+      setTimeout(() => document.getElementById('q-card').classList.remove('shake'), 400);
+    }
+    updateAstronaut(isOk);
+    updateStats();
+    document.querySelectorAll('#answers .ans-btn').forEach(b => b.disabled = true);
+    setTimeout(() => { qIndex++; if (lives <= 0 || qIndex >= TOTAL_Q) showResult(); else renderQuestion(); }, 1400);
+
   } else {
-    streak = 0;
-    lives--;
-    btn.classList.add('wrong');
-    // reveal correct
-    document.querySelectorAll('.ans-btn').forEach(b => {
-      if (b.textContent.toLowerCase() === correct.toLowerCase()) b.classList.add('correct');
+    // 2-player mode
+    if (pNum === 1 && p1done) return;
+    if (pNum === 2 && p2done) return;
+    const colId = pNum === 1 ? 'answers-p1' : 'answers-p2';
+    btn.classList.add(isOk ? 'correct' : 'wrong');
+    document.querySelectorAll(`#${colId} .ans-btn`).forEach(b => {
+      b.disabled = true;
+      if (!isOk && b.textContent.toLowerCase() === correct.toLowerCase()) b.classList.add('correct');
     });
-    if (blank) { blank.textContent = correct; blank.classList.add('filled-wrong'); }
-    showToast(`❌ Λάθος! Σωστό: ${correct}`, 'err');
-    document.getElementById('q-card').classList.add('shake');
-    setTimeout(() => document.getElementById('q-card').classList.remove('shake'), 400);
+    if (pNum === 1) {
+      p1done = true;
+      if (isOk) { streak++;  score  += 10; } else { streak  = 0; lives--;  }
+    } else {
+      p2done = true;
+      if (isOk) { streak2++; score2 += 10; } else { streak2 = 0; lives2--; }
+    }
+    updateAstronaut(isOk);
+    updateStats();
+    if (p1done && p2done) {
+      const blank = document.getElementById('blank');
+      if (blank) { blank.textContent = correct; blank.classList.add('filled-correct'); }
+      setTimeout(() => {
+        qIndex++;
+        if (qIndex >= TOTAL_Q) showResult();
+        else renderQuestion();
+      }, 1400);
+    }
   }
-
-  updateStats();
-  document.querySelectorAll('.ans-btn').forEach(b => b.disabled = true);
-
-  setTimeout(() => {
-    qIndex++;
-    if (lives <= 0 || qIndex >= TOTAL_Q) showResult();
-    else renderQuestion();
-  }, 1400);
 }
 
 /* ══════════════════════════════════════════════
@@ -604,6 +1017,13 @@ function updateStats() {
   const h = ['❤️','❤️','❤️'];
   for (let i = lives; i < 3; i++) h[i] = '🖤';
   document.getElementById('stat-lives').textContent = h.join('');
+  if (players === 2) {
+    document.getElementById('stat-score2').textContent  = score2;
+    document.getElementById('stat-streak2').textContent = streak2 + (streak2 >= 3 ? '🔥' : '');
+    const h2 = ['❤️','❤️','❤️'];
+    for (let i = lives2; i < 3; i++) h2[i] = '🖤';
+    document.getElementById('stat-lives2').textContent = h2.join('');
+  }
 }
 
 let toastTimer;
@@ -631,23 +1051,54 @@ function spawnConfetti(n) {
 ══════════════════════════════════════════════ */
 function showResult() {
   document.getElementById('progress-bar').style.width = '100%';
-  const pct = Math.round((score / (TOTAL_Q * 13)) * 100);
-  let emoji, title;
-  if (pct >= 85)      { emoji='🏆'; title='Εξαιρετικά! Είσαι πρωταθλητής!'; spawnConfetti(30); }
-  else if (pct >= 60) { emoji='🌟'; title='Μπράβο! Συνέχισε έτσι!'; spawnConfetti(15); }
-  else if (pct >= 40) { emoji='💪'; title='Καλή προσπάθεια! Ξαναπροσπάθησε!'; }
-  else                { emoji='📚'; title='Χρειάζεσαι λίγη εξάσκηση!'; }
+  const s2el = document.getElementById('res-score2');
 
-  document.getElementById('res-emoji').textContent = emoji;
-  document.getElementById('res-title').textContent = title;
-  document.getElementById('res-score').textContent = score + ' πόντοι';
-  document.getElementById('res-meta').textContent  = `${qIndex} ερωτήσεις • ${lives > 0 ? lives : 0} ζωές απομένουν`;
+  if (players === 2) {
+    let emoji, title;
+    if (score > score2)       { emoji='🏆'; title='Νίκησε ο Παίκτης 1!'; spawnConfetti(30); }
+    else if (score2 > score)  { emoji='🏆'; title='Νίκησε ο Παίκτης 2!'; spawnConfetti(30); }
+    else                      { emoji='🤝'; title='Ισοπαλία!'; spawnConfetti(20); }
+    document.getElementById('res-emoji').textContent = emoji;
+    document.getElementById('res-title').textContent = title;
+    document.getElementById('res-score').textContent = `👤 Παίκτης 1: ${score} πόντοι`;
+    s2el.style.display = 'block';
+    s2el.textContent   = `👤 Παίκτης 2: ${score2} πόντοι`;
+    document.getElementById('res-meta').textContent  = `${qIndex} ερωτήσεις`;
+  } else {
+    s2el.style.display = 'none';
+    const pct = Math.round((score / (TOTAL_Q * 13)) * 100);
+    let emoji, title;
+    if (pct >= 85)      { emoji='🏆'; title='Εξαιρετικά! Είσαι πρωταθλητής!'; spawnConfetti(30); }
+    else if (pct >= 60) { emoji='🌟'; title='Μπράβο! Συνέχισε έτσι!'; spawnConfetti(15); }
+    else if (pct >= 40) { emoji='💪'; title='Καλή προσπάθεια! Ξαναπροσπάθησε!'; }
+    else                { emoji='📚'; title='Χρειάζεσαι λίγη εξάσκηση!'; }
+    document.getElementById('res-emoji').textContent = emoji;
+    document.getElementById('res-title').textContent = title;
+    document.getElementById('res-score').textContent = score + ' πόντοι';
+    document.getElementById('res-meta').textContent  = `${qIndex} ερωτήσεις • ${lives > 0 ? lives : 0} ζωές απομένουν`;
+  }
   show('screen-result');
 }
 
 /* ══════════════════════════════════════════════
    UTILS
 ══════════════════════════════════════════════ */
+function updateAstronaut(correct) {
+  if (correct) astroPos = Math.min(astroPos + 1, 10);
+  else         astroPos = Math.max(astroPos - 1, 0);
+  const ship  = document.getElementById('astro-ship');
+  const path  = document.getElementById('astro-path');
+  const track = document.getElementById('astro-track');
+  const len   = path.getTotalLength();
+  const pt    = path.getPointAtLength(len * (astroPos / TOTAL_Q));
+  ship.style.left = pt.x + 'px';
+  ship.style.top  = pt.y + 'px';
+  ship.classList.remove('go-up','go-down');
+  void ship.offsetWidth;
+  ship.classList.add(correct ? 'go-up' : 'go-down');
+  if (astroPos >= 10) track.classList.add('reached');
+}
+
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
     const j = ~~(Math.random() * (i + 1));
@@ -666,6 +1117,98 @@ function spreadSameAnswers(arr) {
       }
     }
   }
+}
+
+/* ══════════════════════════════════════════════
+   2-PLAYER RENDER & LOGIC
+══════════════════════════════════════════════ */
+function render2P() {
+  answered = false; p1done = false; p2done = false;
+  const q = questions[qIndex];
+  document.getElementById('q-number-2p').textContent = `${qIndex+1} / ${TOTAL_Q}`;
+  document.getElementById('progress-bar-2p').style.width = `${(qIndex/TOTAL_Q)*100}%`;
+  const opts = [...q.options]; shuffle(opts);
+  ['p1','p2'].forEach((p, idx) => {
+    const html = mode === 'articles'
+      ? `<span class="blank" id="blank-${p}">___</span> ${q.word}`
+      : `${q.article} ${q.pre}<span class="blank" id="blank-${p}">_</span>${q.post}`;
+    document.getElementById(`sentence-${p}`).innerHTML = html;
+    const container = document.getElementById(`ans-${p}`);
+    container.innerHTML = '';
+    const pNum = idx + 1;
+    opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'ans-btn';
+      btn.textContent = opt;
+      btn.onclick = () => checkAnswer2P(opt, q.answer, btn, pNum);
+      container.appendChild(btn);
+    });
+  });
+}
+
+function checkAnswer2P(chosen, correct, btn, pNum) {
+  if (pNum === 1 && p1done) return;
+  if (pNum === 2 && p2done) return;
+  const isOk = chosen.toLowerCase() === correct.toLowerCase();
+  const p = pNum === 1 ? 'p1' : 'p2';
+  btn.classList.add(isOk ? 'correct' : 'wrong');
+  document.querySelectorAll(`#ans-${p} .ans-btn`).forEach(b => {
+    b.disabled = true;
+    if (!isOk && b.textContent.toLowerCase() === correct.toLowerCase()) b.classList.add('correct');
+  });
+  const blank = document.getElementById(`blank-${p}`);
+  const card  = document.getElementById(`qcard-${p}`);
+  if (isOk) {
+    if (pNum === 1) { streak++;  const bonus  = Math.min(streak -1,3)*5; score  += 10+bonus;  }
+    else            { streak2++; const bonus2 = Math.min(streak2-1,3)*5; score2 += 10+bonus2; }
+    if (blank) { blank.textContent = chosen;  blank.classList.add('filled-correct'); }
+    card.classList.add('bounce');
+    setTimeout(() => card.classList.remove('bounce'), 400);
+  } else {
+    if (pNum === 1) { streak  = 0; lives--;  }
+    else            { streak2 = 0; lives2--; }
+    if (blank) { blank.textContent = correct; blank.classList.add('filled-wrong'); }
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 400);
+  }
+  if (pNum === 1) p1done = true; else p2done = true;
+  updateMiniRocket(pNum, isOk);
+  updateStats2P();
+  if (p1done && p2done) {
+    setTimeout(() => { qIndex++; if (qIndex >= TOTAL_Q) showResult(); else render2P(); }, 1400);
+  }
+}
+
+function updateMiniRocket(pNum, correct) {
+  if (pNum === 1) {
+    astroPos1 = correct ? Math.min(astroPos1+1, TOTAL_Q) : Math.max(astroPos1-1, 0);
+  } else {
+    astroPos2 = correct ? Math.min(astroPos2+1, TOTAL_Q) : Math.max(astroPos2-1, 0);
+  }
+  const p    = pNum === 1 ? 'p1' : 'p2';
+  const pos  = pNum === 1 ? astroPos1 : astroPos2;
+  const ship  = document.getElementById(`mini-ship-${p}`);
+  const path  = document.getElementById(`mini-path-${p}`);
+  const track = document.getElementById(`mini-track-${p}`);
+  const len   = path.getTotalLength();
+  const pt    = path.getPointAtLength(len * (pos / TOTAL_Q));
+  ship.style.left = pt.x + 'px';
+  ship.style.top  = pt.y + 'px';
+  ship.classList.remove('go-up','go-down');
+  void ship.offsetWidth;
+  ship.classList.add(correct ? 'go-up' : 'go-down');
+  if (pos >= TOTAL_Q) track.classList.add('reached');
+}
+
+function updateStats2P() {
+  document.getElementById('p1-score').textContent  = score;
+  document.getElementById('p1-streak').textContent = streak + (streak >= 3 ? '🔥' : '');
+  const h1 = ['❤️','❤️','❤️']; for (let i = lives; i < 3; i++) h1[i] = '🖤';
+  document.getElementById('p1-lives').textContent  = h1.join('');
+  document.getElementById('p2-score').textContent  = score2;
+  document.getElementById('p2-streak').textContent = streak2 + (streak2 >= 3 ? '🔥' : '');
+  const h2 = ['❤️','❤️','❤️']; for (let i = lives2; i < 3; i++) h2[i] = '🖤';
+  document.getElementById('p2-lives').textContent  = h2.join('');
 }
 </script>
 </body>
