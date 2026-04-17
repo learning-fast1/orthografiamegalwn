@@ -49,12 +49,20 @@
 
   /* ─── HEADER ─── */
   .header { text-align: center; margin-bottom: 36px; }
-  .header h1 {
-    font-size: clamp(2rem, 6vw, 3.2rem);
+  .header-title {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 4px; margin-bottom: 8px;
+  }
+  .header-title img {
+    height: clamp(100px, 14vw, 140px);
+    mix-blend-mode: multiply;
+  }
+  .header-title h1 {
+    font-size: clamp(1.8rem, 5vw, 3rem);
     font-weight: 900;
     background: linear-gradient(90deg, #a855f7, #ec4899, #facc15);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    line-height: 1.1; margin-bottom: 8px;
+    line-height: 1.2; text-align: center;
   }
   .header p { font-size: 1.1rem; opacity: .7; }
 
@@ -290,8 +298,10 @@
 
   <!-- HEADER -->
   <div class="header">
-    <h1>✨ Ορθογραφία Μεγάλων</h1>
-    <p>Παιχνίδι ορθογραφίας για παιδιά άνω των 10 ετών</p>
+    <div class="header-title">
+      <img src="logo.png" alt="Learning Fast logo">
+      <h1>Παιχνίδι Ορθογραφίας</h1>
+    </div>
   </div>
 
   <!-- MENU -->
@@ -352,8 +362,6 @@
    DATA
 ══════════════════════════════════════════════ */
 
-// Endings: fixed set – always shown for endings mode
-const ENDING_OPTIONS = ['-α','-η','-ες','-ές','-ης','-ής','-ών','-ων','-οι','-οί','-ους','-ούς','-ο','-ος','-ός','-ου','-ή','-ιά','-ας'];
 
 // Articles mode: 4 hand-picked confusable options per question
 // No γενική αρσενικού/ουδέτερου ενικού ("του") – only γενική θηλυκού "της" is kept
@@ -445,28 +453,19 @@ const articlesData = [
   { word: "τάξεων",     answer: "των", options: ["των","τον","της","τις"],   hint: "Γενική, πληθυντικός, θηλυκό" },
 ];
 
-// Endings mode: stem = word stem shown, answer = correct ending
+// Endings mode: pre = stem before blank, post = letters after blank, answer = missing vowel(s)
 const endingsData = [
-  { stem: "μαθήτρι", answer: "-α",   hint: "Ονομαστική, ενικός, θηλυκό σε -α" },
-  { stem: "μαθητ",   answer: "-ές",  hint: "Ονομαστική, πληθυντικός, αρσενικό σε -ής" },
-  { stem: "καλ",     answer: "-ούς", hint: "Αιτιατική, πληθυντικός, αρσενικό επίθετο" },
-  { stem: "δασκάλ",  answer: "-α",   hint: "Ονομαστική, ενικός, θηλυκό" },
-  { stem: "πατέρ",   answer: "-α",   hint: "Γενική, ενικός, αρσενικό" },
-  { stem: "παιδ",    answer: "-ιά",  hint: "Ονομαστική, πληθυντικός, ουδέτερο" },
-  { stem: "δρόμ",    answer: "-οι",  hint: "Ονομαστική, πληθυντικός, αρσενικό (-ος)" },
-  { stem: "θάλασσ",  answer: "-α",   hint: "Ονομαστική, ενικός, θηλυκό" },
-  { stem: "φων",     answer: "-ή",   hint: "Αιτιατική, ενικός, θηλυκό σε -ή" },
-  { stem: "μαθητ",   answer: "-ών",  hint: "Γενική, πληθυντικός, αρσενικό" },
-  { stem: "ωραί",    answer: "-α",   hint: "Ονομαστική, ενικός, θηλυκό επίθετο" },
-  { stem: "ωραί",    answer: "-α",   hint: "Αιτιατική, ενικός, θηλυκό επίθετο" },
-  { stem: "ωραί",    answer: "-α",   hint: "Ονομαστική, πληθυντικός, ουδέτερο επίθετο" },
-  { stem: "καλ",     answer: "-ός",  hint: "Ονομαστική, ενικός, αρσενικό επίθετο" },
-  { stem: "καλ",     answer: "-οί",  hint: "Ονομαστική, πληθυντικός, αρσενικό επίθετο" },
-  { stem: "καλ",     answer: "-ούς", hint: "Αιτιατική, πληθυντικός, αρσενικό επίθετο" },
-  { stem: "καλ",     answer: "-ών",  hint: "Γενική, πληθυντικός, επίθετο" },
-  { stem: "γυναίκ",  answer: "-α",   hint: "Ονομαστική, ενικός, θηλυκό" },
-  { stem: "γυναίκ",  answer: "-α",   hint: "Αιτιατική, ενικός, θηλυκό" },
-  { stem: "γυναίκ",  answer: "-ες",  hint: "Ονομαστική, πληθυντικός, θηλυκό" },
+  { article: "οι",   pre: "μαθητ",    post: "ς", answer: "ε",  options: ["ε","αι","η"]  },
+  { article: "τους", pre: "καλ",      post: "ς", answer: "ου", options: ["ου","ο","ω"]  },
+  { article: "τα",   pre: "παιδ",     post: "ά", answer: "ι",  options: ["ι","η","ει"]  },
+  { article: "οι",   pre: "δρόμ",     post: "",  answer: "οι", options: ["οι","η","ει"] },
+  { article: "τη",   pre: "φων",      post: "",  answer: "η",  options: ["η","ι","οι"]  },
+  { article: "των",  pre: "μαθητ",    post: "ν", answer: "ω",  options: ["ω","ο","αι"]  },
+  { article: "ο",    pre: "καλ",      post: "ς", answer: "ο",  options: ["ο","ω","οι"]  },
+  { article: "οι",   pre: "καλ",      post: "",  answer: "οι", options: ["οι","η","ει"] },
+  { article: "τους", pre: "καλ",      post: "ς", answer: "ου", options: ["ου","ο","ω"]  },
+  { article: "των",  pre: "καλ",      post: "ν", answer: "ω",  options: ["ω","ο","αι"]  },
+  { article: "οι",   pre: "γυναίκ",   post: "ς", answer: "ε",  options: ["ε","αι","η"]  },
 ];
 
 /* ══════════════════════════════════════════════
@@ -534,16 +533,12 @@ function renderQuestion() {
     // blank before the word
     html = `<span class="blank" id="blank">___</span> ${q.word}`;
   } else {
-    // stem followed by blank  (no trailing text)
-    html = `${q.stem}<span class="blank" id="blank">___</span>`;
+    html = `${q.article} ${q.pre}<span class="blank" id="blank">_</span>${q.post}`;
   }
   document.getElementById('sentence').innerHTML = html;
-  document.getElementById('hint').textContent = '💡 ' + q.hint;
+  document.getElementById('hint').textContent = '';
 
-  // Articles: shuffle the 4 hand-picked options;  Endings: fixed full set
-  const opts = mode === 'articles'
-    ? (() => { const o = [...q.options]; shuffle(o); return o; })()
-    : ENDING_OPTIONS;
+  const opts = (() => { const o = [...q.options]; shuffle(o); return o; })();
   const container = document.getElementById('answers');
   container.innerHTML = '';
   opts.forEach(opt => {
