@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ορθογραφία Μεγάλων – Παιχνίδι Ορθογραφίας</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0c29;
+    --card: rgba(255,255,255,0.07);
+    --purple: #a855f7;
+    --pink: #ec4899;
+    --blue: #3b82f6;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #facc15;
+    --text: #f1f5f9;
+    --radius: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ─── STARS ─── */
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle 3s infinite ease-in-out;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: .2; transform: scale(1); }
+    50%      { opacity: 1;  transform: scale(1.4); }
+  }
+
+  /* ─── WRAPPER ─── */
+  .wrapper {
+    position: relative; z-index: 1;
+    max-width: 860px; margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  /* ─── HEADER ─── */
+  .header { text-align: center; margin-bottom: 36px; }
+  .header h1 {
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-weight: 900;
+    background: linear-gradient(90deg, #a855f7, #ec4899, #facc15);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1.1; margin-bottom: 8px;
+  }
+  .header p { font-size: 1.1rem; opacity: .7; }
+
+  /* ─── MENU ─── */
+  #screen-menu { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .menu-cards { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+  .menu-card {
+    width: 260px; padding: 36px 24px;
+    background: var(--card);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-align: center;
+    transition: transform .3s, box-shadow .3s, border-color .3s;
+    backdrop-filter: blur(12px);
+  }
+  .menu-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 20px 60px rgba(168,85,247,.4);
+    border-color: var(--purple);
+  }
+  .menu-card .icon { font-size: 3.5rem; margin-bottom: 14px; }
+  .menu-card h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+  .menu-card p  { font-size: .95rem; opacity: .7; line-height: 1.5; }
+  .menu-card.articles { border-color: rgba(59,130,246,.4); }
+  .menu-card.articles:hover { box-shadow: 0 20px 60px rgba(59,130,246,.4); border-color: var(--blue); }
+  .menu-card.endings  { border-color: rgba(236,72,153,.4); }
+  .menu-card.endings:hover  { box-shadow: 0 20px 60px rgba(236,72,153,.4); border-color: var(--pink); }
+
+  /* ─── GAME SCREEN ─── */
+  #screen-game { display: none; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+  }
+  .btn-back {
+    background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2);
+    color: white; padding: 10px 20px; border-radius: 50px;
+    font-family: inherit; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: background .2s;
+  }
+  .btn-back:hover { background: rgba(255,255,255,0.2); }
+
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stat-box {
+    background: var(--card); border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 12px; padding: 8px 16px; text-align: center;
+    backdrop-filter: blur(8px); min-width: 80px;
+  }
+  .stat-box .label { font-size: .7rem; opacity: .6; text-transform: uppercase; letter-spacing: .08em; }
+  .stat-box .value { font-size: 1.4rem; font-weight: 900; }
+  .stat-box .value.score  { color: var(--yellow); }
+  .stat-box .value.streak { color: #f97316; }
+  .stat-box .value.lives  { color: var(--red); }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap {
+    background: rgba(255,255,255,0.08);
+    border-radius: 50px; height: 10px; margin-bottom: 28px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; border-radius: 50px;
+    background: linear-gradient(90deg, var(--purple), var(--pink));
+    transition: width .5s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ─── QUESTION CARD ─── */
+  .question-card {
+    background: var(--card);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius);
+    padding: 36px 28px;
+    text-align: center;
+    backdrop-filter: blur(14px);
+    margin-bottom: 28px;
+    transition: transform .3s;
+  }
+  .question-card.shake { animation: shake .4s; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-8px); }
+    80% { transform: translateX(8px); }
+  }
+  .question-card.bounce { animation: bounceQ .4s; }
+  @keyframes bounceQ {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+  }
+
+  .mode-badge {
+    display: inline-block;
+    background: linear-gradient(90deg, var(--purple), var(--pink));
+    border-radius: 50px; padding: 4px 16px;
+    font-size: .8rem; font-weight: 700; letter-spacing: .06em;
+    margin-bottom: 18px; text-transform: uppercase;
+  }
+  .q-number { font-size: .95rem; opacity: .5; margin-bottom: 10px; }
+
+  .sentence {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 800; line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .blank {
+    display: inline-block;
+    min-width: 80px; border-bottom: 4px solid var(--purple);
+    color: var(--purple); font-style: italic;
+    padding: 0 6px; transition: all .3s;
+  }
+  .blank.filled-correct { color: var(--green); border-color: var(--green); }
+  .blank.filled-wrong   { color: var(--red);   border-color: var(--red); }
+
+  .hint { font-size: .95rem; opacity: .55; margin-top: 10px; }
+
+  /* ─── ANSWER BUTTONS ─── */
+  .answers {
+    display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+  }
+  .ans-btn {
+    padding: 14px 28px;
+    background: rgba(255,255,255,0.08);
+    border: 2.5px solid rgba(255,255,255,0.18);
+    border-radius: 50px;
+    color: white; font-family: inherit; font-size: 1.15rem; font-weight: 800;
+    cursor: pointer; min-width: 90px;
+    transition: transform .2s, background .2s, border-color .2s, box-shadow .2s;
+  }
+  .ans-btn:hover:not(:disabled) {
+    transform: translateY(-4px) scale(1.06);
+    background: rgba(168,85,247,0.3);
+    border-color: var(--purple);
+    box-shadow: 0 8px 30px rgba(168,85,247,.4);
+  }
+  .ans-btn.correct {
+    background: rgba(34,197,94,.25); border-color: var(--green);
+    box-shadow: 0 0 24px rgba(34,197,94,.5);
+    animation: popIn .35s;
+  }
+  .ans-btn.wrong {
+    background: rgba(239,68,68,.25); border-color: var(--red);
+    animation: popIn .35s;
+  }
+  @keyframes popIn {
+    0% { transform: scale(.9); }
+    60% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+  .ans-btn:disabled { cursor: default; opacity: .6; transform: none !important; }
+
+  /* ─── FEEDBACK TOAST ─── */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: rgba(30,20,60,.95);
+    border: 2px solid var(--purple);
+    border-radius: 50px; padding: 14px 32px;
+    font-size: 1.1rem; font-weight: 700;
+    display: flex; align-items: center; gap: 10px;
+    transition: transform .4s cubic-bezier(.4,0,.2,1);
+    z-index: 999; backdrop-filter: blur(12px);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.ok  { border-color: var(--green); }
+  .toast.err { border-color: var(--red); }
+
+  /* ─── CELEBRATION ─── */
+  .confetti-piece {
+    position: fixed; top: -20px; width: 12px; height: 16px;
+    border-radius: 3px;
+    animation: fall 1.5s ease-in forwards;
+    pointer-events: none; z-index: 9999;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ─── RESULT SCREEN ─── */
+  #screen-result { display: none; text-align: center; }
+  .result-card {
+    background: var(--card); border: 2px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius); padding: 48px 36px;
+    backdrop-filter: blur(14px); max-width: 500px; margin: 0 auto;
+  }
+  .result-emoji { font-size: 4rem; margin-bottom: 16px; }
+  .result-card h2 { font-size: 2rem; font-weight: 900; margin-bottom: 10px; }
+  .result-score {
+    font-size: 3.5rem; font-weight: 900;
+    background: linear-gradient(90deg, var(--yellow), var(--pink));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin: 16px 0;
+  }
+  .result-meta { opacity: .65; margin-bottom: 28px; font-size: 1rem; }
+  .btn-primary {
+    display: inline-block; padding: 16px 40px;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    border: none; border-radius: 50px;
+    color: white; font-family: inherit; font-size: 1.1rem; font-weight: 800;
+    cursor: pointer; margin: 8px;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 8px 30px rgba(168,85,247,.4);
+  }
+  .btn-primary:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 14px 40px rgba(168,85,247,.6); }
+  .btn-secondary {
+    display: inline-block; padding: 16px 40px;
+    background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+    color: white; font-family: inherit; font-size: 1.1rem; font-weight: 800;
+    cursor: pointer; margin: 8px;
+    transition: background .2s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+  @media (max-width: 500px) {
+    .menu-card { width: 100%; }
+    .ans-btn { padding: 12px 18px; font-size: 1rem; }
+    .sentence { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>✨ Ορθογραφία Μεγάλων</h1>
+    <p>Παιχνίδι ορθογραφίας για παιδιά άνω των 10 ετών</p>
+  </div>
+
+  <!-- MENU -->
+  <div id="screen-menu">
+    <div class="menu-cards">
+      <div class="menu-card articles" onclick="startGame('articles')" id="card-articles">
+        <div class="icon">📖</div>
+        <h2>Άρθρα</h2>
+        <p>Βρες το σωστό άρθρο!<br><em>η, οι, της, τις, των, τον…</em></p>
+      </div>
+      <div class="menu-card endings" onclick="startGame('endings')" id="card-endings">
+        <div class="icon">✏️</div>
+        <h2>Καταλήξεις</h2>
+        <p>Βρες τη σωστή κατάληξη!<br><em>-η, -οι, -εις, -ων, -ο, -ες…</em></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div id="screen-game">
+    <div class="topbar">
+      <button class="btn-back" onclick="goMenu()">← Μενού</button>
+      <div class="stats">
+        <div class="stat-box"><div class="label">Πόντοι</div><div class="value score" id="stat-score">0</div></div>
+        <div class="stat-box"><div class="label">Σερί</div><div class="value streak" id="stat-streak">0🔥</div></div>
+        <div class="stat-box"><div class="label">Ζωές</div><div class="value lives" id="stat-lives">❤️❤️❤️</div></div>
+      </div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="question-card" id="q-card">
+      <div class="mode-badge" id="mode-badge">Άρθρα</div>
+      <div class="q-number" id="q-number">Ερώτηση 1 / 10</div>
+      <div class="sentence" id="sentence"></div>
+      <div class="hint" id="hint"></div>
+    </div>
+    <div class="answers" id="answers"></div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="screen-result">
+    <div class="result-card">
+      <div class="result-emoji" id="res-emoji">🏆</div>
+      <h2 id="res-title">Μπράβο!</h2>
+      <div class="result-score" id="res-score">0</div>
+      <div class="result-meta" id="res-meta"></div>
+      <button class="btn-primary" id="btn-play-again" onclick="playAgain()">🔄 Παίξε Ξανά</button>
+      <button class="btn-secondary" onclick="goMenu()">🏠 Μενού</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Σωστό!</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   DATA
+══════════════════════════════════════════════ */
+
+const articlesData = [
+  { sentence: "___ μητέρα μαγειρεύει στην κουζίνα.", blank: 0, answer: "Η", options: ["Η","Οι","Της","Τον"], hint: "Υποκείμενο, ενικός, θηλυκό" },
+  { sentence: "___ μαθητές διαβάζουν στη βιβλιοθήκη.", blank: 0, answer: "Οι", options: ["Η","Οι","Τον","Τις"], hint: "Υποκείμενο, πληθυντικός, αρσενικό" },
+  { sentence: "Αγόρασα ένα βιβλίο για ___ δασκάλας.", blank: 5, answer: "της", options: ["της","τις","τον","των"], hint: "Γενική, ενικός, θηλυκό" },
+  { sentence: "Βλέπω ___ φίλους μου στο πάρκο.", blank: 2, answer: "τους", options: ["τον","τους","τις","της"], hint: "Αιτιατική, πληθυντικός, αρσενικό" },
+  { sentence: "Η τσάντα ___ μαθήτριας είναι κόκκινη.", blank: 2, answer: "της", options: ["της","τις","τον","των"], hint: "Γενική, ενικός, θηλυκό" },
+  { sentence: "Έδωσα το δώρο ___ αδελφό μου.", blank: 3, answer: "τον", options: ["τον","την","τις","τους"], hint: "Αιτιατική, ενικός, αρσενικό" },
+  { sentence: "Τα παιχνίδια ___ παιδιών είναι εδώ.", blank: 2, answer: "των", options: ["των","της","τον","τις"], hint: "Γενική, πληθυντικός" },
+  { sentence: "___ θάλασσα είναι πολύ γαλάζια.", blank: 0, answer: "Η", options: ["Η","Οι","Τον","Των"], hint: "Υποκείμενο, ενικός, θηλυκό" },
+  { sentence: "Συνάντησα ___ φίλες μου χτες.", blank: 2, answer: "τις", options: ["τις","της","τον","τους"], hint: "Αιτιατική, πληθυντικός, θηλυκό" },
+  { sentence: "___ δρόμοι της πόλης είναι στενοί.", blank: 0, answer: "Οι", options: ["Οι","Η","Τον","Των"], hint: "Υποκείμενο, πληθυντικός, αρσενικό" },
+  { sentence: "Μιλάω με ___ γιαγιά μου κάθε βράδυ.", blank: 2, answer: "τη", options: ["τη","την","τις","της"], hint: "Αιτιατική, ενικός, θηλυκό" },
+  { sentence: "Η φωνή ___ καθηγητή ακούγεται καθαρά.", blank: 2, answer: "του", options: ["του","των","την","τον"], hint: "Γενική, ενικός, αρσενικό" },
+  { sentence: "___ λύκοι ζουν στο δάσος.", blank: 0, answer: "Οι", options: ["Οι","Η","Τον","Τους"], hint: "Υποκείμενο, πληθυντικός, αρσενικό" },
+  { sentence: "Βρήκα ___ χαμένη τσάντα στο σχολείο.", blank: 2, answer: "την", options: ["την","τη","τους","τις"], hint: "Αιτιατική, ενικός, θηλυκό (πριν φωνήεν)" },
+  { sentence: "Τα χρώματα ___ λουλουδιών είναι όμορφα.", blank: 2, answer: "των", options: ["των","της","τον","τις"], hint: "Γενική, πληθυντικός" },
+  { sentence: "Ακούω ___ κελαηδισμό των πουλιών.", blank: 2, answer: "τον", options: ["τον","της","τις","τους"], hint: "Αιτιατική, ενικός, αρσενικό" },
+  { sentence: "Η αδελφή ___ Μαρίας είναι γιατρός.", blank: 2, answer: "της", options: ["της","τις","τον","του"], hint: "Γενική, ενικός, θηλυκό" },
+  { sentence: "Βλέπω ___ αστέρια κάθε νύχτα.", blank: 2, answer: "τα", options: ["τα","τον","τις","τους"], hint: "Αιτιατική, πληθυντικός, ουδέτερο" },
+  { sentence: "___ σπίτι μας είναι μεγάλο.", blank: 0, answer: "Το", options: ["Το","Η","Οι","Τα"], hint: "Υποκείμενο, ενικός, ουδέτερο" },
+  { sentence: "Τα βιβλία ___ μαθητών είναι στα θρανία.", blank: 2, answer: "των", options: ["των","τον","της","τις"], hint: "Γενική, πληθυντικός" },
+];
+
+const endingsData = [
+  { sentence: "Η μαθήτρι___ διαβάζει πολύ.", stem: "μαθήτρι", answer: "-α", options: ["-α","-η","-ες","-ών"], hint: "Ενικός, ονομαστική, θηλυκό σε -α" },
+  { sentence: "Οι μαθητ___ παίζουν στο διάλειμμα.", stem: "μαθητ", answer: "-ές", options: ["-ές","-οί","-ής","-ών"], hint: "Πληθυντικός, ονομαστική, αρσενικό" },
+  { sentence: "Βλέπω τους καλ___ φίλους μου.", stem: "καλ", answer: "-ούς", options: ["-ούς","-οί","-ή","-ές"], hint: "Πληθυντικός, αιτιατική, αρσενικό" },
+  { sentence: "Η δασκάλ___ μας είναι πολύ καλή.", stem: "δασκάλ", answer: "-α", options: ["-α","-η","-ες","-ών"], hint: "Ενικός, ονομαστική, θηλυκό" },
+  { sentence: "Του πατέρ___ αρέσει το ψάρεμα.", stem: "πατέρ", answer: "-α", options: ["-α","-ου","-η","-ες"], hint: "Γενική, ενικός, αρσενικό" },
+  { sentence: "Τα παιδ___ παίζουν στην αυλή.", stem: "παιδ", answer: "-ιά", options: ["-ιά","-ί","-ων","-ιών"], hint: "Πληθυντικός, ονομαστική, ουδέτερο" },
+  { sentence: "Οι δρόμ___ είναι φαρδείς.", stem: "δρόμ", answer: "-οι", options: ["-οι","-οι","-ους","-ων"], hint: "Πληθυντικός, ονομαστική, αρσενικό (-ος)" },
+  { sentence: "Η θάλασσ___ είναι ήρεμη σήμερα.", stem: "θάλασσ", answer: "-α", options: ["-α","-ης","-ες","-ων"], hint: "Ενικός, ονομαστική, θηλυκό" },
+  { sentence: "Ακούω τη φων___ της.", stem: "φων", answer: "-ή", options: ["-ή","-ές","-ής","-ών"], hint: "Ενικός, αιτιατική, θηλυκό σε -ή" },
+  { sentence: "Των μαθητ___ τα βιβλία είναι εδώ.", stem: "μαθητ", answer: "-ών", options: ["-ών","-ές","-ής","-οί"], hint: "Πληθυντικός, γενική, αρσενικό" },
+  { sentence: "Η ωραί___ εικόνα κρέμεται στον τοίχο.", stem: "ωραί", answer: "-α", options: ["-α","-η","-ες","-ων"], hint: "Ενικός, ονομαστική, θηλυκό επίθετο" },
+  { sentence: "Βλέπω την ωραί___ πόλη.", stem: "ωραί", answer: "-α", options: ["-α","-η","-ες","-ης"], hint: "Ενικός, αιτιατική, θηλυκό επίθετο" },
+  { sentence: "Τα ωραί___ λουλούδια ευωδιάζουν.", stem: "ωραί", answer: "-α", options: ["-α","-ων","-ες","-ο"], hint: "Πληθυντικός, ονομαστική, ουδέτερο επίθετο" },
+  { sentence: "Ο καλ___ μαθητής κερδίζει.", stem: "καλ", answer: "-ός", options: ["-ός","-οί","-ού","-ούς"], hint: "Ενικός, ονομαστική, αρσενικό επίθετο" },
+  { sentence: "Οι καλ___ μαθητές κερδίζουν.", stem: "καλ", answer: "-οί", options: ["-οί","-ός","-ούς","-ών"], hint: "Πληθυντικός, ονομαστική, αρσενικό επίθετο" },
+  { sentence: "Μιλάω με καλ___ φίλους.", stem: "καλ", answer: "-ούς", options: ["-ούς","-οί","-ός","-ών"], hint: "Πληθυντικός, αιτιατική, αρσενικό επίθετο" },
+  { sentence: "Των καλ___ παιδιών τα παιχνίδια.", stem: "καλ", answer: "-ών", options: ["-ών","-οί","-ούς","-ός"], hint: "Πληθυντικός, γενική, επίθετο" },
+  { sentence: "Η γυναίκ___ περπατά στο πάρκο.", stem: "γυναίκ", answer: "-α", options: ["-α","-η","-ες","-ας"], hint: "Ενικός, ονομαστική, θηλυκό" },
+  { sentence: "Είδα τη γυναίκ___ στο σούπερ μάρκετ.", stem: "γυναίκ", answer: "-α", options: ["-α","-η","-ες","-ας"], hint: "Ενικός, αιτιατική, θηλυκό" },
+  { sentence: "Οι γυναίκ___ μιλούν δυνατά.", stem: "γυναίκ", answer: "-ες", options: ["-ες","-α","-ων","-ας"], hint: "Πληθυντικός, ονομαστική, θηλυκό" },
+];
+
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+let mode = '', score = 0, streak = 0, lives = 3, qIndex = 0, questions = [], answered = false, lastMode = '';
+
+const TOTAL_Q = 10;
+
+/* ══════════════════════════════════════════════
+   STARS
+══════════════════════════════════════════════ */
+function makeStars() {
+  const c = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random() * 3 + 1;
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*3}s`;
+    c.appendChild(s);
+  }
+}
+makeStars();
+
+/* ══════════════════════════════════════════════
+   SCREENS
+══════════════════════════════════════════════ */
+function show(id) {
+  ['screen-menu','screen-game','screen-result'].forEach(s => document.getElementById(s).style.display = 'none');
+  document.getElementById(id).style.display = (id === 'screen-menu') ? 'flex' : 'block';
+}
+
+function goMenu() { show('screen-menu'); }
+
+function playAgain() { startGame(lastMode); }
+
+/* ══════════════════════════════════════════════
+   GAME START
+══════════════════════════════════════════════ */
+function startGame(m) {
+  mode = m; lastMode = m;
+  score = 0; streak = 0; lives = 3; qIndex = 0; answered = false;
+  const pool = m === 'articles' ? [...articlesData] : [...endingsData];
+  shuffle(pool);
+  questions = pool.slice(0, TOTAL_Q);
+  document.getElementById('mode-badge').textContent = m === 'articles' ? '📖 Άρθρα' : '✏️ Καταλήξεις';
+  show('screen-game');
+  updateStats();
+  renderQuestion();
+}
+
+/* ══════════════════════════════════════════════
+   RENDER QUESTION
+══════════════════════════════════════════════ */
+function renderQuestion() {
+  answered = false;
+  const q = questions[qIndex];
+  document.getElementById('q-number').textContent = `Ερώτηση ${qIndex+1} / ${TOTAL_Q}`;
+  document.getElementById('progress-bar').style.width = `${(qIndex/TOTAL_Q)*100}%`;
+
+  // Build sentence with blank
+  let html = '';
+  if (mode === 'articles') {
+    const words = q.sentence.split(' ');
+    html = words.map((w, i) => {
+      if (i === q.blank) return `<span class="blank" id="blank">___</span>`;
+      return w;
+    }).join(' ');
+  } else {
+    const s = q.sentence;
+    const stemEnd = s.indexOf(q.stem) + q.stem.length;
+    const before = s.slice(0, stemEnd);
+    const after  = s.slice(s.indexOf('_', stemEnd));
+    const afterClean = s.slice(s.lastIndexOf('_') + 1);
+    html = before + `<span class="blank" id="blank">___</span>` + afterClean;
+  }
+  document.getElementById('sentence').innerHTML = html;
+  document.getElementById('hint').textContent = '💡 ' + q.hint;
+
+  // Shuffle options
+  const opts = [...q.options]; shuffle(opts);
+  const container = document.getElementById('answers');
+  container.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.textContent = opt;
+    btn.onclick = () => checkAnswer(opt, q.answer, btn);
+    container.appendChild(btn);
+  });
+}
+
+/* ══════════════════════════════════════════════
+   CHECK ANSWER
+══════════════════════════════════════════════ */
+function checkAnswer(chosen, correct, btn) {
+  if (answered) return;
+  answered = true;
+
+  const blank = document.getElementById('blank');
+  const isOk = chosen.toLowerCase() === correct.toLowerCase();
+
+  if (isOk) {
+    streak++;
+    const bonus = Math.min(streak - 1, 3) * 5;
+    score += 10 + bonus;
+    btn.classList.add('correct');
+    if (blank) { blank.textContent = chosen; blank.classList.add('filled-correct'); }
+    showToast(streak >= 3 ? `🔥 Σερί x${streak}! +${10+bonus} πόντοι!` : `✅ Σωστό! +${10+bonus} πόντοι`, 'ok');
+    document.getElementById('q-card').classList.add('bounce');
+    setTimeout(() => document.getElementById('q-card').classList.remove('bounce'), 400);
+    if (streak >= 3) spawnConfetti(8);
+  } else {
+    streak = 0;
+    lives--;
+    btn.classList.add('wrong');
+    // reveal correct
+    document.querySelectorAll('.ans-btn').forEach(b => {
+      if (b.textContent.toLowerCase() === correct.toLowerCase()) b.classList.add('correct');
+    });
+    if (blank) { blank.textContent = correct; blank.classList.add('filled-wrong'); }
+    showToast(`❌ Λάθος! Σωστό: ${correct}`, 'err');
+    document.getElementById('q-card').classList.add('shake');
+    setTimeout(() => document.getElementById('q-card').classList.remove('shake'), 400);
+  }
+
+  updateStats();
+  document.querySelectorAll('.ans-btn').forEach(b => b.disabled = true);
+
+  setTimeout(() => {
+    qIndex++;
+    if (lives <= 0 || qIndex >= TOTAL_Q) showResult();
+    else renderQuestion();
+  }, 1400);
+}
+
+/* ══════════════════════════════════════════════
+   UI HELPERS
+══════════════════════════════════════════════ */
+function updateStats() {
+  document.getElementById('stat-score').textContent  = score;
+  document.getElementById('stat-streak').textContent = streak + (streak >= 3 ? '🔥' : '');
+  const h = ['❤️','❤️','❤️'];
+  for (let i = lives; i < 3; i++) h[i] = '🖤';
+  document.getElementById('stat-lives').textContent = h.join('');
+}
+
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type || '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = 'toast', 1800);
+}
+
+function spawnConfetti(n) {
+  const colors = ['#a855f7','#ec4899','#facc15','#22c55e','#3b82f6','#f97316'];
+  for (let i = 0; i < n; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `left:${Math.random()*100}vw;background:${colors[~~(Math.random()*colors.length)]};animation-duration:${1+Math.random()}s;animation-delay:${Math.random()*.4}s;transform:rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   RESULT
+══════════════════════════════════════════════ */
+function showResult() {
+  document.getElementById('progress-bar').style.width = '100%';
+  const pct = Math.round((score / (TOTAL_Q * 13)) * 100);
+  let emoji, title;
+  if (pct >= 85)      { emoji='🏆'; title='Εξαιρετικά! Είσαι πρωταθλητής!'; spawnConfetti(30); }
+  else if (pct >= 60) { emoji='🌟'; title='Μπράβο! Συνέχισε έτσι!'; spawnConfetti(15); }
+  else if (pct >= 40) { emoji='💪'; title='Καλή προσπάθεια! Ξαναπροσπάθησε!'; }
+  else                { emoji='📚'; title='Χρειάζεσαι λίγη εξάσκηση!'; }
+
+  document.getElementById('res-emoji').textContent = emoji;
+  document.getElementById('res-title').textContent = title;
+  document.getElementById('res-score').textContent = score + ' πόντοι';
+  document.getElementById('res-meta').textContent  = `${qIndex} ερωτήσεις • ${lives > 0 ? lives : 0} ζωές απομένουν`;
+  show('screen-result');
+}
+
+/* ══════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════ */
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = ~~(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+}
+</script>
+</body>
+</html>
