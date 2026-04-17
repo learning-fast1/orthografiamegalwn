@@ -511,6 +511,7 @@ function startGame(m) {
   score = 0; streak = 0; lives = 3; qIndex = 0; answered = false;
   const pool = m === 'articles' ? [...articlesData] : [...endingsData];
   shuffle(pool);
+  spreadSameAnswers(pool);
   questions = pool.slice(0, TOTAL_Q);
   document.getElementById('mode-badge').textContent = m === 'articles' ? '📖 Άρθρα' : '✏️ Καταλήξεις';
   show('screen-game');
@@ -656,6 +657,19 @@ function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
     const j = ~~(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
+  }
+}
+
+function spreadSameAnswers(arr) {
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i].answer === arr[i - 1].answer) {
+      for (let j = i + 1; j < arr.length; j++) {
+        if (arr[j].answer !== arr[i - 1].answer) {
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+          break;
+        }
+      }
+    }
   }
 }
 </script>
